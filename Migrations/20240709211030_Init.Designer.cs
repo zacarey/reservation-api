@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace reservation_api.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20240709205929_init")]
-    partial class init
+    [Migration("20240709211030_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
