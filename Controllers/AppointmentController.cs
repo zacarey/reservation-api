@@ -21,21 +21,30 @@ public class AppointmentController : ControllerBase
 
   [HttpPost]
   public async Task SaveAvailability([FromBody] AvailabilityRequest req)
-    => await _service.SaveAvailabilityAsync(req.ProviderId, req.Availability);
+  {
+    List<(DateTime start, DateTime end)> availability = req.Availability.Select(i => (i.Start, i.End)).ToList();
+    await _service.SaveAvailabilityAsync(req.ProviderId, availability);
+  }
 
   [HttpPost("reserve")]
-  public async Task ReserveAppointment([FromBody] AppointmentRequest req)
-    => await _service.ReserveAppointmentAsync(req.ClientId, req.AppointmentId);
+  public async Task<IActionResult> ReserveAppointment([FromBody] AppointmentRequest req)
+    => Ok(await _service.ReserveAppointmentAsync(req.ClientId, req.AppointmentId) ? "Reserved" : "Not Reserved");
 
   [HttpPost("confirm")]
-  public async Task ConfirmAppointment([FromBody] AppointmentRequest req)
-    => await _service.ConfirmAppointmentAsync(req.ClientId, req.AppointmentId);
+  public async Task<IActionResult> ConfirmAppointment([FromBody] AppointmentRequest req)
+    => Ok(await _service.ConfirmAppointmentAsync(req.ClientId, req.AppointmentId) ? "Confirmed" : "Not Confirmed");
 }
 
 public class AvailabilityRequest
 {
   public Guid ProviderId { get; set; }
-  public List<(DateTime, DateTime)> Availability { get; set; } = new List<(DateTime, DateTime)>();
+  public List<AvailabilityStartEndRequest> Availability { get; set; } = new List<AvailabilityStartEndRequest>();
+}
+
+public class AvailabilityStartEndRequest
+{
+  public DateTime Start { get; set; }
+  public DateTime End { get; set; }
 }
 
 public class AppointmentRequest
